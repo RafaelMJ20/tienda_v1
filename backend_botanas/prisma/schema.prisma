@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Usuario del sistema
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String    // Hash de contraseña (bcrypt)
+  name      String
+  role      String    @default("vendedor") // admin, vendedor, consulta
+  active    Int       @default(1) // 1 = activo, 0 = inactivo
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+// Categoría de productos
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  description String?
+  active    Int       @default(1) // 1 = activo, 0 = eliminado (borrado lógico)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+// Producto
+model Product {
+  id              Int       @id @default(autoincrement())
+  name            String
+  categoryId      Int
+  category        Category  @relation(fields: [categoryId], references: [id])
+  purchasePrice   Float     // Precio de compra
+  salePrice       Float     // Precio de venta
+  currentStock    Float     // Stock actual
+  minimumStock    Float     // Stock mínimo para alertas
+  unit            String    // Unidad de medida (pieza, kilo, litro, costal, etc.)
+  photo           String?   // URL o ruta de la foto
+  active          Int       @default(1) // 1 = activo, 0 = eliminado (borrado lógico)
+  saleItems       SaleItem[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("products")
+}
+
+// Venta
+model Sale {
+  id        Int         @id @default(autoincrement())
+  saleDate  DateTime    @default(now())
+  notes     String?     // Notas opcionales (nombre del cliente, observaciones)
+  paymentMethod String   @default("cash") // cash, credit, mixed
+  customerName String?   // Cliente cuando la venta sea crédito o mixta
+  amountPaid  Float      @default(0) // Monto pagado al momento de la venta
+  creditAmount Float     @default(0) // Monto pendiente por cobrar
+  total     Float       // Total de la venta
+  gain      Float       // Ganancia total (suma de ganancias de cada producto)
+  items     SaleItem[]  // Ítems de la venta
+  active    Int         @default(1) // 1 = activo, 0 = eliminado (borrado lógico)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("sales")
+}
+
+// Pagos de crédito realizados por clientes
+model CreditPayment {
+  id           Int      @id @default(autoincrement())
+  customerName String
+  amount       Float
+  notes        String?
+  paymentDate  DateTime @default(now())
+  active       Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("credit_payments")
+}
+
+// Ítems de venta (detalle de cada producto vendido)
+model SaleItem {
+  id          Int     @id @default(autoincrement())
+  saleId      Int
+  sale        Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  productId   Int
+  product     Product @relation(fields: [productId], references: [id])
+  quantity    Float   // Cantidad vendida
+  unitPrice   Float   // Precio unitario al momento de la venta
+  subtotal    Float   // Subtotal del ítem (quantity * unitPrice)
+  gain        Float   // Ganancia del ítem (quantity * (salePrice - purchasePrice))
+
+  @@map("sale_items")
+}
+
+// Registro de auditoría (intentos de login, acciones críticas)
+model AuditLog {
+  id        Int       @id @default(autoincrement())
+  action    String    // Ej: "LOGIN_ATTEMPT", "LOGIN_SUCCESS", "LOGIN_FAILED", "PASSWORD_CHANGE", etc.
+  userId    Int?      // ID del usuario (null si login fallido)
+  email     String?   // Email usado en intento de login
+  ipAddress String?   // IP desde donde se realizó la acción
+  userAgent String?   // User-Agent del cliente
+  success   Boolean   @default(false) // Si la acción fue exitosa
+  reason    String?   // Razón del fallo (si aplica)
+  details   String?   // JSON con detalles adicionales
+  createdAt DateTime  @default(now())
+
+  @@map("audit_logs")
+}
+
+
+

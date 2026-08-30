@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "sales" ADD COLUMN     "amountPaid" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN     "creditAmount" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN     "customerName" TEXT,
+ADD COLUMN     "paymentMethod" TEXT NOT NULL DEFAULT 'cash';
