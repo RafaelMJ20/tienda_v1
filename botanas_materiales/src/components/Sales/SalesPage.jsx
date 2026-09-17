@@ -149,6 +149,7 @@ export const SalesPage = () => {
 
       const saleData = {
         notes: notes || null,
+        saleDate: new Date().toISOString(),
         paymentMethod,
         customerName: customerName.trim() || null,
         amountPaid: paymentMethod === "cash" ? total : Number(amountPaid || 0),
