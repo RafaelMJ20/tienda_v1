@@ -147,9 +147,14 @@ export const SalesPage = () => {
         }
       }
 
+      // Obtener fecha/hora local sin convertir a UTC
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      const localDateTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
       const saleData = {
         notes: notes || null,
-        saleDate: new Date().toISOString(),
+        saleDate: localDateTime,
         paymentMethod,
         customerName: customerName.trim() || null,
         amountPaid: paymentMethod === "cash" ? total : Number(amountPaid || 0),
