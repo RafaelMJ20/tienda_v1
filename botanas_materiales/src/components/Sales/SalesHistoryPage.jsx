@@ -57,7 +57,12 @@ export const SalesHistoryPage = () => {
       } else if (filters.period === "all") {
         response = await saleService.getAll();
       } else {
-        response = await saleService.getByPeriod(filters.period);
+        // Enviar la fecha local del usuario para que el backend calcule correctamente
+        // el inicio/fin del período en la zona horaria del usuario
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        const localDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+        response = await saleService.getByPeriod(filters.period, localDate);
       }
 
       setSales(response.data || []);
