@@ -7,6 +7,7 @@ export const saleController = {
       paymentMethod = "cash",
       customerName = null,
       amountPaid,
+      saleDate,
     } = req.body;
 
     // Validaciones
@@ -86,20 +87,30 @@ export const saleController = {
 
       const creditAmount = Math.max(total - paidAmountValue, 0);
 
-      // Crear la venta
-      const sale = await req.prisma.sale.create({
-        data: {
-          notes,
-          paymentMethod,
-          customerName: normalizedCustomerName || null,
-          amountPaid: paidAmountValue,
-          creditAmount,
-          total,
-          gain: totalGain,
-          items: {
-            create: saleItemsData,
-          },
+      // Crear la venta (si viene saleDate desde el cliente, usarlo para preservar zona horaria local)
+      const saleData = {
+        notes,
+        paymentMethod,
+        customerName: normalizedCustomerName || null,
+        amountPaid: paidAmountValue,
+        creditAmount,
+        total,
+        gain: totalGain,
+        items: {
+          create: saleItemsData,
         },
+      };
+
+      if (saleDate) {
+        // Intentar parsear la fecha proporcionada
+        const parsed = new Date(saleDate);
+        if (!isNaN(parsed.getTime())) {
+          saleData.saleDate = parsed;
+        }
+      }
+
+      const sale = await req.prisma.sale.create({
+        data: saleData,
         include: {
           items: {
             include: {
