@@ -9,13 +9,12 @@ const parseLocalDate = (dateString, endOfDay = false) =>
 export const saleController = {
   // Crear una nueva venta
   async createSale(req, res) {
-    const {
+      const {
       notes,
       items,
       paymentMethod = "cash",
       customerName = null,
       amountPaid,
-      saleDate,
     } = req.body;
 
     // Validaciones
@@ -95,7 +94,7 @@ export const saleController = {
 
       const creditAmount = Math.max(total - paidAmountValue, 0);
 
-      // Crear la venta (si viene saleDate desde el cliente, usarlo para preservar zona horaria local)
+      // Crear la venta con la hora actual del servidor
       const saleData = {
         notes,
         paymentMethod,
@@ -104,18 +103,11 @@ export const saleController = {
         creditAmount,
         total,
         gain: totalGain,
+        saleDate: new Date(),
         items: {
           create: saleItemsData,
         },
       };
-
-      if (saleDate) {
-        // Intentar parsear la fecha proporcionada
-        const parsed = new Date(saleDate);
-        if (!isNaN(parsed.getTime())) {
-          saleData.saleDate = parsed;
-        }
-      }
 
       const sale = await req.prisma.sale.create({
         data: saleData,

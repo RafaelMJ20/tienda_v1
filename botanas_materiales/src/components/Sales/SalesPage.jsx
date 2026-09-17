@@ -147,20 +147,8 @@ export const SalesPage = () => {
         }
       }
 
-      // Obtener fecha/hora local y convertir a UTC
-      const now = new Date();
-      // getTimezoneOffset() retorna minutos, negativo para UTC+, positivo para UTC-
-      // Ejemplo: si es UTC-6, retorna 360 (6 * 60)
-      const offsetMinutes = now.getTimezoneOffset();
-      
-      // Restar el offset para obtener UTC verdadero
-      const utcDate = new Date(now.getTime() - offsetMinutes * 60000);
-      const pad = (n) => String(n).padStart(2, "0");
-      const isoDateTime = `${utcDate.getFullYear()}-${pad(utcDate.getMonth() + 1)}-${pad(utcDate.getDate())}T${pad(utcDate.getHours())}:${pad(utcDate.getMinutes())}:${pad(utcDate.getSeconds())}`;
-      
       const saleData = {
         notes: notes || null,
-        saleDate: isoDateTime,
         paymentMethod,
         customerName: customerName.trim() || null,
         amountPaid: paymentMethod === "cash" ? total : Number(amountPaid || 0),
