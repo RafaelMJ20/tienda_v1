@@ -5,6 +5,15 @@ import { Modal } from "../UI/Modal.jsx";
 import { saleService } from "../../services/api.js";
 
 export const SalesHistoryPage = () => {
+  const dateFormatter = new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Mexico_City",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   const [sales, setSales] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedSale, setSelectedSale] = useState(null);
@@ -97,11 +106,7 @@ export const SalesHistoryPage = () => {
   const handleDeleteSale = async (sale) => {
     const result = await Swal.fire({
       title: "¿Estás seguro?",
-      text: `Se eliminará la venta del ${new Date(sale.saleDate).toLocaleDateString("es-ES", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })}. Esta acción no se puede deshacer y el stock se restaurará.`,
+      text: `Se eliminará la venta del ${dateFormatter.format(new Date(sale.saleDate))}. Esta acción no se puede deshacer y el stock se restaurará.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#dc2626",
@@ -132,14 +137,7 @@ export const SalesHistoryPage = () => {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return dateFormatter.format(new Date(dateString));
   };
 
   // Lógica de paginación

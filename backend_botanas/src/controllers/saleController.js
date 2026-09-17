@@ -1,3 +1,11 @@
+const formatDateKey = (date) =>
+  date.toLocaleDateString("en-CA", {
+    timeZone: "America/Mexico_City",
+  });
+
+const parseLocalDate = (dateString, endOfDay = false) =>
+  new Date(`${dateString}T${endOfDay ? "23:59:59.999" : "00:00:00"}`);
+
 export const saleController = {
   // Crear una nueva venta
   async createSale(req, res) {
@@ -150,11 +158,11 @@ export const saleController = {
       if (startDate || endDate) {
         where.saleDate = {};
         if (startDate) {
-          where.saleDate.gte = new Date(startDate);
+          where.saleDate.gte = parseLocalDate(startDate, false);
         }
         if (endDate) {
           // Añadir un día completo
-          const end = new Date(endDate);
+          const end = parseLocalDate(endDate, false);
           end.setDate(end.getDate() + 1);
           where.saleDate.lt = end;
         }
@@ -282,7 +290,7 @@ export const saleController = {
     const { date } = req.query; // Fecha de referencia (YYYY-MM-DD)
 
     try {
-      const referenceDate = date ? new Date(date) : new Date();
+      const referenceDate = date ? parseLocalDate(date, false) : new Date();
       let startDate, endDate;
 
       switch (period) {
@@ -339,8 +347,8 @@ export const saleController = {
         data: sales,
         period,
         dateRange: {
-          start: startDate.toISOString().split("T")[0],
-          end: endDate.toISOString().split("T")[0],
+          start: formatDateKey(startDate),
+          end: formatDateKey(endDate),
         },
         summary: {
           totalSales,

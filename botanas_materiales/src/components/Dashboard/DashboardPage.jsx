@@ -18,6 +18,8 @@ import {
 import { reportService } from "../../services/api.js";
 
 export const DashboardPage = () => {
+  const timeZoneOptions = { timeZone: "America/Mexico_City" };
+
   const [dashboard, setDashboard] = useState(null);
   const [dailyTrend, setDailyTrend] = useState(null);
   const [monthlyTrend, setMonthlyTrend] = useState(null);
@@ -181,12 +183,12 @@ export const DashboardPage = () => {
                 <XAxis
                   dataKey="date"
                   tick={{ fontSize: 12 }}
-                  tickFormatter={(date) => new Date(date).toLocaleDateString("es-ES", { month: "short", day: "numeric" })}
+                  tickFormatter={(date) => new Date(date).toLocaleDateString("es-ES", { month: "short", day: "numeric", ...timeZoneOptions })}
                 />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
                   formatter={(value) => `$${value.toFixed(2)}`}
-                  labelFormatter={(label) => new Date(label).toLocaleDateString("es-ES")}
+                  labelFormatter={(label) => new Date(label).toLocaleDateString("es-ES", timeZoneOptions)}
                 />
                 <Legend />
                 <Line
@@ -257,12 +259,12 @@ export const DashboardPage = () => {
                 <XAxis
                   dataKey="month"
                   tick={{ fontSize: 12 }}
-                  tickFormatter={(month) => new Date(month + "-01").toLocaleDateString("es-ES", { month: "short", year: "2-digit" })}
+                  tickFormatter={(month) => new Date(month + "-01").toLocaleDateString("es-ES", { month: "short", year: "2-digit", ...timeZoneOptions })}
                 />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
                   formatter={(value) => `$${value.toFixed(2)}`}
-                  labelFormatter={(label) => new Date(label + "-01").toLocaleDateString("es-ES", { month: "long", year: "numeric" })}
+                  labelFormatter={(label) => new Date(label + "-01").toLocaleDateString("es-ES", { month: "long", year: "numeric", ...timeZoneOptions })}
                 />
                 <Legend />
                 <Bar dataKey="gain" fill="#10b981" name="Ganancia" radius={[8, 8, 0, 0]} />

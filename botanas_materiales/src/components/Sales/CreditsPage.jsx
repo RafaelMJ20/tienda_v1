@@ -5,6 +5,15 @@ import { Modal } from "../UI/Modal.jsx";
 import { creditService } from "../../services/api.js";
 
 export const CreditsPage = () => {
+  const dateFormatter = new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Mexico_City",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,13 +137,7 @@ export const CreditsPage = () => {
   };
 
   const formatDate = (dateString) =>
-    new Date(dateString).toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    dateFormatter.format(new Date(dateString));
 
   if (isLoading && !summary) {
     return (

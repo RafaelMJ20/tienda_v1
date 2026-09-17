@@ -1,3 +1,17 @@
+const SALES_TIME_ZONE = "America/Mexico_City";
+
+const formatDateKey = (date) =>
+  date.toLocaleDateString("en-CA", {
+    timeZone: SALES_TIME_ZONE,
+  });
+
+const formatMonthKey = (date) =>
+  date.toLocaleDateString("en-CA", {
+    timeZone: SALES_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+  });
+
 export const reportController = {
   // Reporte de Ventas por Período
   async getSalesReport(req, res) {
@@ -329,7 +343,7 @@ export const reportController = {
       });
     } catch (error) {
       console.error("Error al generar dashboard:", error);
-      res.status(500).json({ error: "Error al generar dashboard" });
+      res.status(500).json({ error: "Error   al generar dashboard" });
     }
   },
 
@@ -361,12 +375,12 @@ export const reportController = {
       for (let i = 0; i < days; i++) {
         const date = new Date(startDate);
         date.setDate(startDate.getDate() + i);
-        const dateStr = date.toISOString().split("T")[0];
+        const dateStr = formatDateKey(date);
         dailyData[dateStr] = { sales: 0, revenue: 0, gain: 0 };
       }
 
       sales.forEach((sale) => {
-        const dateStr = sale.saleDate.toISOString().split("T")[0];
+        const dateStr = formatDateKey(sale.saleDate);
         if (dailyData[dateStr]) {
           dailyData[dateStr].sales += 1;
           dailyData[dateStr].revenue += sale.total;
@@ -410,12 +424,12 @@ export const reportController = {
       for (let i = 0; i < months; i++) {
         const date = new Date(startDate);
         date.setMonth(startDate.getMonth() + i);
-        const monthStr = date.toISOString().slice(0, 7); // YYYY-MM
+        const monthStr = formatMonthKey(date); // YYYY-MM
         monthlyData[monthStr] = { revenue: 0, gain: 0, sales: 0 };
       }
 
       sales.forEach((sale) => {
-        const monthStr = sale.saleDate.toISOString().slice(0, 7);
+        const monthStr = formatMonthKey(sale.saleDate);
         if (monthlyData[monthStr]) {
           monthlyData[monthStr].revenue += sale.total;
           monthlyData[monthStr].gain += sale.gain;
@@ -492,7 +506,7 @@ export const reportController = {
 
         sales.forEach((sale) => {
           const saleDate = new Date(sale.saleDate);
-          const dateKey = saleDate.toISOString().split("T")[0];
+              const dateKey = formatDateKey(saleDate);
 
           if (!dailyStats.has(dateKey)) {
             dailyStats.set(dateKey, {
@@ -553,8 +567,8 @@ export const reportController = {
 
         return res.json({
           period,
-          startDate: startDate.toISOString().split("T")[0],
-          endDate: new Date(endDate.getTime() - 1).toISOString().split("T")[0],
+          startDate: formatDateKey(startDate),
+          endDate: formatDateKey(new Date(endDate.getTime() - 1)),
           groupByDay: true,
           dailyData: dailyArray,
           summary: {
@@ -606,8 +620,8 @@ export const reportController = {
 
       res.json({
         period,
-        startDate: startDate.toISOString().split("T")[0],
-        endDate: new Date(endDate.getTime() - 1).toISOString().split("T")[0],
+        startDate: formatDateKey(startDate),
+        endDate: formatDateKey(new Date(endDate.getTime() - 1)),
         groupByDay: false,
         products: productArray,
         summary: {
